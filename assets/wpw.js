@@ -1,0 +1,12 @@
+(function(){var root=document.getElementById('wp-root');if(!root)return;var AS=window.RT_IDX.replace(/search-\w+\.json$/,''),TR=window.RT_LANG=='tr',K=root.dataset.k,T0=root.dataset.t,WPD=null;
+function wpCC(){var c=null;try{c=localStorage.getItem('wpcc')}catch(e){}return c||(TR?'TR':'US')}
+var NM={US:'United States',GB:'United Kingdom',TR:'Türkiye',DE:'Germany',FR:'France',CA:'Canada',AU:'Australia',IT:'Italy',ES:'Spain',NL:'Netherlands',BR:'Brazil',IN:'India',JP:'Japan',KR:'South Korea',MX:'Mexico',SE:'Sweden'};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function draw(){var d=WPD.f[K]||{},cc=wpCC(),x=d[cc],tr=TR;
+var sel='<select class="wpsel" aria-label="'+(tr?'Ülke':'Country')+'">'+Object.keys(NM).map(function(k){return '<option value="'+k+'"'+(k==cc?' selected':'')+'>'+NM[k]+'</option>'}).join('')+'</select>';
+var L=[['s',tr?'Abonelikle':'Stream'],['f',tr?'Ücretsiz':'Free'],['r',tr?'Kirala':'Rent'],['b',tr?'Satın al':'Buy']],rows='';
+if(x)L.forEach(function(p){if(x[p[0]]&&x[p[0]].length)rows+='<div class="wpr"><span class="wpl">'+p[1]+'</span>'+x[p[0]].map(function(i){var n=esc(WPD.p[i]||i),u='https://www.themoviedb.org/movie/'+d.tm+'/watch?locale='+cc;return '<a class="wpc wpi" href="'+u+'" target="_blank" rel="noopener nofollow" title="'+n+'" aria-label="'+n+'"><img src="'+AS+'providers/'+i+'.jpg" alt="'+n+'" width="36" height="36" loading="lazy"></a>'}).join('')+'</div>'});
+if(!rows)rows='<p class="wpn">'+(tr?'Bu ülkede listelenen bir hizmet bulunamadı.':'No services listed for this country.')+' <a href="https://www.justwatch.com/'+cc.toLowerCase()+'/search?q='+encodeURIComponent(T0.replace(/\s*\(\d{4}\)$/,''))+'" target="_blank" rel="noopener nofollow">'+(tr?"JustWatch'ta ara":'Search JustWatch')+'</a></p>';
+root.innerHTML='<div class="wpw"><h3>'+(tr?'Nerede izlenir':'Where to watch')+' '+sel+'</h3>'+rows+(rows.indexOf('wpr')>=0?'<style>.fh .wa a.wn.wnw{display:none!important}</style>':'')+'<small class="wpa">'+(tr?'Yayın verileri JustWatch tarafından sağlanır (TMDB aracılığıyla). Mevcudiyet değişebilir.':'Streaming data provided by JustWatch via TMDB. Availability changes often.')+'</small></div>'}
+root.addEventListener('change',function(e){if(e.target.className=='wpsel'){try{localStorage.setItem('wpcc',e.target.value)}catch(x){}draw()}});
+fetch(window.RT_IDX.replace(/search-\w+\.json$/,'')+'wp.json').then(function(r){return r.json()}).then(function(j){WPD=j;draw()}).catch(function(){})})();
